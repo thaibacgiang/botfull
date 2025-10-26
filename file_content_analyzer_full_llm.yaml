@@ -1,6 +1,6 @@
 blueprint:
   name: Voice - File Content Analyzer
-  author: Thaidv
+  author: Thaidv1
   description: >-
     # Tool designed to analyze and extract all types of information from media and document files
 
@@ -38,7 +38,7 @@ blueprint:
             entity:
               domain: conversation
               integration: google_generative_ai
-          required: true
+          default: ""
     prompt_settings:
       name: Prompt settings for the LLM
       icon: mdi:robot
@@ -155,6 +155,21 @@ sequence:
       - alias: Stop the script
         stop: >-
           Unable to extract data because MIME type is missing or incorrect.
+        response_variable: response
+
+  # Kiểm tra nếu google_ai_entity được cung cấp
+  - if:
+      - condition: template
+        value_template: "{{ not google_ai_entity }}"
+    then:
+      - alias: Set variable for error message
+        variables:
+          response:
+            error: >-
+              Google AI Entity is required. Please select a Google Generative AI entity in the blueprint settings.
+      - alias: Stop the script
+        stop: >-
+              Google AI Entity is required. Please select a Google Generative AI entity in the blueprint settings.
         response_variable: response
 
   # Use Google Generative AI Conversation service
